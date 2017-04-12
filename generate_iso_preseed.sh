@@ -1,7 +1,9 @@
 #!/bin/sh
 
+preseed_file=preseed.cfg
+machine_init_file=machine_init.py
 input_iso=firmware-8.7.1-amd64-netinst.iso
-output_iso=debian_8_7_firmware_preseed.iso
+output_iso=debian_8_7.iso
 
 initial_dir=`pwd`
 mkdir cgdeb
@@ -16,8 +18,8 @@ umount loopdir
 chmod u+w isofiles
 cd workspace
 gzip -d < ../isofiles/install.amd/initrd.gz | cpio --extract --verbose --make-directories --no-absolute-filenames
-cp $initial_dir/preseed.cfg .
-cp $initial_dir/machine_init.py .
+cp $initial_dir/$preseed_file .
+cp $initial_dir/$machine_init_file .
 su -c 'find . | cpio -H newc --create --verbose | gzip -9 > ../isofiles/install.amd/initrd.gz'
 cd ../isofiles
 chmod u+w md5sum.txt
