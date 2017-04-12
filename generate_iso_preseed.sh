@@ -1,17 +1,18 @@
 #!/bin/bash
 
 preseed_file=preseed.cfg
-input_iso=firmware-8.7.1-amd64-netinst.iso
-output_iso=debian_8_7.iso
+
+# the script produces a preseeded iso named output.iso in the current directory
+# assuming there is only one iso and one preseed.cfg files in the current directory, apart from the script itself.
 
 initial_dir=`pwd`
 mkdir cgdeb
 cd cgdeb
 mkdir workspace iso isofiles loopdir
 cd iso
-cp $initial_dir/$input_iso .
+cp $initial_dir/*.iso .
 cd ..
-mount -o loop iso/$input_iso loopdir
+mount -o loop iso/*.iso loopdir
 rsync -v -a -H --exclude=TRANS.TBL loopdir/ isofiles/
 umount loopdir
 chmod u+w isofiles
@@ -22,6 +23,6 @@ su -c 'find . | cpio -H newc --create --verbose | gzip -9 > ../isofiles/install.
 cd ../isofiles
 chmod u+w md5sum.txt
 md5sum `find -follow -type f` > md5sum.txt
-genisoimage -o $initial_dir/$output_iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat .
+genisoimage -o $initial_dir/output.iso -r -J -no-emul-boot -boot-load-size 4 -boot-info-table -b isolinux/isolinux.bin -c isolinux/boot.cat .
 cd $initial_dir
 rm -r cgdeb
