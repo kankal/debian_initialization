@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 preseed_file=preseed.cfg
 machine_init_file=machine_init.py
