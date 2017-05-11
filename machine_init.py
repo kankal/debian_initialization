@@ -19,7 +19,7 @@ subprocess.call(command)
 
 
 import os
-from os.path import expanduser
+#from os.path import expanduser
 import requests
 from multiprocessing import Process, Queue
 
@@ -89,7 +89,7 @@ if __name__ == '__main__':
 ######################################################
   commands[0] = [
     'mkdir',
-    expanduser('~')+'/installed_deb_files']
+    '/home/amir/installed_deb_files']
 
 
 
@@ -183,14 +183,14 @@ if __name__ == '__main__':
   # cd into home
   commands[19] = [
     my_change_dir,
-    expanduser('~')]
+    '/home/amir']
 
   # downloading vundle
   commands[20] = [
     'git',
     'clone',
     'https://github.com/VundleVim/Vundle.vim.git',
-    expanduser('~')+'/.vim/bundle/Vundle.vim']
+    '/home/amir/.vim/bundle/Vundle.vim']
 
   # downloading .vimrc
   commands[21] = [
@@ -205,22 +205,22 @@ if __name__ == '__main__':
 
   commands[23] = [
     'mkdir',
-    expanduser('~') + '/ycm_temp']
+    '/home/amir/ycm_temp']
 
   # downloading clang_llvm
   commands[24] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_Uk5DSWt3SWtxRk0',
-    expanduser('~') + '/ycm_temp/clang_llvm.tar.xz']
+    '/home/amir/ycm_temp/clang_llvm.tar.xz']
 
   commands[25] = [
     'tar',
     'jxvf',
-    expanduser('~') + '/ycm_temp/clang_llvm.tar.xz']
+    '/home/amir/ycm_temp/clang_llvm.tar.xz']
 
   commands[26] = [
     'mv',
-    expanduser('~') + '/ycm_temp/clang_llvm.tar.xz',
+    '/home/amir/ycm_temp/clang_llvm.tar.xz',
     'llvm_root_dir']
 
   commands[27] = [
@@ -241,20 +241,20 @@ if __name__ == '__main__':
 # creating build directory
   commands[29] = [
     'mkdir',
-    expanduser('~')+'/ycm_build']
+    '/home/amir/ycm_build']
 
 # cd into build directory
   commands[30] = [
     my_change_dir,
-    expanduser('~')+'/ycm_build']
+    '/home/amir/ycm_build']
 
   commands[31] = [
     'cmake',
     '-G',
     '"Unix Makefiles"',
-    '-DPATH_TO_LLVM_ROOT='+expanduser('~')+'/ycm_temp/llvm_root_dir',
+    '-DPATH_TO_LLVM_ROOT='+'/home/amir/ycm_temp/llvm_root_dir',
     '.',
-    expanduser('~')+'/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp']
+    '/home/amir/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp']
 
   commands[32] = [
     'cmake',
@@ -268,12 +268,12 @@ if __name__ == '__main__':
   commands[33] = [
     'rm',
     '-r',
-    expanduser('~')+'/ycm_build']
+    '/home/amir/ycm_build']
 
   commands[34] = [
     'rm',
     '-r',
-    expanduser('~')+'/ycm_temp']
+    '/home/amir/ycm_temp']
 
 ######################################################
 # v500
@@ -284,22 +284,22 @@ if __name__ == '__main__':
 
   commands[35] = [
     my_change_dir,
-    expanduser('~')]
+    /home/amir]
     
   commands[36] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_MkhSU1pWZUROYXc',
-    'expanduser(~)' + '/installed_deb_files/v500_first_package.deb']
+    '/home/amir/installed_deb_files/v500_first_package.deb']
 
   commands[37] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_TWc1Sm1YS1dsVVk',
-    'expanduser(~)' + '//installed_deb_filesv500_second_package.deb']
+    '/home/amir/installed_deb_files/v500_second_package.deb']
 
   commands[38] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_ZHV6aE1FLUtEUDg',
-    'expanduser(~)' + '/installed_deb_files/v500_third_package.deb']
+    '/home/amir/installed_deb_files/v500_third_package.deb']
 
   commands[39] = [
     'sudo',
@@ -311,19 +311,19 @@ if __name__ == '__main__':
     'sudo',
     'dpkg',
     '--install',
-    'expanduser(~)' + '/installed_deb_files/v500_first_package.deb']
+    '/home/amir/installed_deb_files/v500_first_package.deb']
 
   commands[41] = [
     'sudo',
     'dpkg',
     '--install',
-    'expanduser(~)' + '/installed_deb_files/v500_second_package.deb']
+    '/home/amir/installed_deb_files/v500_second_package.deb']
 
   commands[42] = [
     'sudo',
     'dpkg',
     '--install',
-    'expanduser(~)' + '/installed_deb_files/v500_third_package.deb']
+    '/home/amir/installed_deb_files/v500_third_package.deb']
 
 ######################################################
 # latex
@@ -338,13 +338,13 @@ if __name__ == '__main__':
   commands[44] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_UkxPc1JFa0JLdU0',
-    expanduser('~') + '/installed_deb_files/culmus_package.deb']
+    '/home/amir/installed_deb_files/culmus_package.deb']
 
   commands[45] = [
     'sudo',
     'dpkg',
     '--install',
-    expanduser('~') + '/installed_deb_files/culmus_package.deb']
+    '/home/amir/installed_deb_files/culmus_package.deb']
 
 
 ######################################################
