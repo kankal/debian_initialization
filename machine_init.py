@@ -19,7 +19,6 @@ subprocess.call(command)
 
 
 import os
-#from os.path import expanduser
 import requests
 from multiprocessing import Process, Queue
 
@@ -39,9 +38,8 @@ def run_commands(commands):
 
 
 
-def my_change_dir(to_path):
+def cd_into(to_path):
     os.chdir(to_path[0])
-
 
 def download_file_from_google_drive(args):
     URL = "https://docs.google.com/uc?export=download"
@@ -124,7 +122,7 @@ if __name__ == '__main__':
 
   # cd into vim
   commands[11] = [
-    my_change_dir,
+    cd_into,
     'vim']
 
   # configuring vim
@@ -159,7 +157,8 @@ if __name__ == '__main__':
 
   commands[16] = [
     'update-alternatives',
-    '--set editor',
+    '--set',
+    'editor',
     '/usr/bin/vim']
 
   commands[17] = [
@@ -172,7 +171,8 @@ if __name__ == '__main__':
 
   commands[18] = [
     'update-alternatives',
-    '--set vi',
+    '--set',
+    'vi',
     '/usr/bin/vim']
 
 ######################################################
@@ -182,7 +182,7 @@ if __name__ == '__main__':
 
   # cd into home
   commands[19] = [
-    my_change_dir,
+    cd_into,
     '/home/amir']
 
   # downloading vundle
@@ -205,32 +205,40 @@ if __name__ == '__main__':
 
   commands[23] = [
     'mkdir',
-    '/home/amir/ycm_temp']
+    'ycm_temp']
+
+  commands[24] = [
+    cd_into,
+    'ycm_temp']
 
   # downloading clang_llvm
-  commands[24] = [
+  commands[25] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_Uk5DSWt3SWtxRk0',
-    '/home/amir/ycm_temp/clang_llvm.tar.xz']
-
-  commands[25] = [
-    'tar',
-    'jxvf',
-    '/home/amir/ycm_temp/clang_llvm.tar.xz']
+    'clang_llvm.tar.xz']
 
   commands[26] = [
-    'mv',
-    '/home/amir/ycm_temp/clang_llvm.tar.xz',
-    'llvm_root_dir']
+    'tar',
+    'jxvf',
+    'clang_llvm.tar.xz']
 
   commands[27] = [
+    'mv',
+    'clang_llvm',
+    'llvm_root_dir']
+
+  commands[28] = [
+    cd_into,
+    '/home/amir']
+
+  commands[29] = [
     'apt-get',
     'install',
     '--yes',
     '--force-yes',      
     'cmake']
 
-  commands[28] = [
+  commands[30] = [
     'apt-get',
     'install',
     '--yes',
@@ -239,16 +247,16 @@ if __name__ == '__main__':
     'python3-dev']
 
 # creating build directory
-  commands[29] = [
+  commands[31] = [
     'mkdir',
-    '/home/amir/ycm_build']
+    'ycm_build']
 
 # cd into build directory
-  commands[30] = [
-    my_change_dir,
-    '/home/amir/ycm_build']
+  commands[32] = [
+    cd_into,
+    'ycm_build']
 
-  commands[31] = [
+  commands[33] = [
     'cmake',
     '-G',
     '"Unix Makefiles"',
@@ -256,7 +264,7 @@ if __name__ == '__main__':
     '.',
     '/home/amir/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp']
 
-  commands[32] = [
+  commands[34] = [
     'cmake',
     '-build',
     '.',
@@ -265,15 +273,19 @@ if __name__ == '__main__':
     '--config',
     'Release']
 
-  commands[33] = [
-    'rm',
-    '-r',
-    '/home/amir/ycm_build']
+  commands[35] = [
+    cd_into,
+    '/home/amir']
 
-  commands[34] = [
+  commands[36] = [
     'rm',
     '-r',
-    '/home/amir/ycm_temp']
+    'ycm_build']
+
+  commands[37] = [
+    'rm',
+    '-r',
+    'ycm_temp']
 
 ######################################################
 # v500
@@ -282,110 +294,110 @@ if __name__ == '__main__':
 # iscan-plugin* - third file
 ######################################################
 
-  commands[35] = [
-    my_change_dir,
-    /home/amir]
-    
-  commands[36] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_MkhSU1pWZUROYXc',
-    '/home/amir/installed_deb_files/v500_first_package.deb']
-
-  commands[37] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_TWc1Sm1YS1dsVVk',
-    '/home/amir/installed_deb_files/v500_second_package.deb']
-
+   
   commands[38] = [
     download_file_from_google_drive,
-    '0B_AXnUbSJ-r_ZHV6aE1FLUtEUDg',
-    '/home/amir/installed_deb_files/v500_third_package.deb']
+    '0B_AXnUbSJ-r_MkhSU1pWZUROYXc',
+    'installed_deb_files/v500_first_package.deb']
 
   commands[39] = [
-    'sudo',
-    'apt-get',
-    'install',
-    'xstlproc']
+    download_file_from_google_drive,
+    '0B_AXnUbSJ-r_TWc1Sm1YS1dsVVk',
+    'installed_deb_files/v500_second_package.deb']
 
   commands[40] = [
-    'sudo',
-    'dpkg',
-    '--install',
-    '/home/amir/installed_deb_files/v500_first_package.deb']
+    download_file_from_google_drive,
+    '0B_AXnUbSJ-r_ZHV6aE1FLUtEUDg',
+    'installed_deb_files/v500_third_package.deb']
 
   commands[41] = [
     'sudo',
-    'dpkg',
-    '--install',
-    '/home/amir/installed_deb_files/v500_second_package.deb']
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'xstlproc']
 
   commands[42] = [
     'sudo',
     'dpkg',
     '--install',
-    '/home/amir/installed_deb_files/v500_third_package.deb']
+    'installed_deb_files/v500_first_package.deb']
+
+  commands[43] = [
+    'sudo',
+    'dpkg',
+    '--install',
+    'installed_deb_files/v500_second_package.deb']
+
+  commands[44] = [
+    'sudo',
+    'dpkg',
+    '--install',
+    'installed_deb_files/v500_third_package.deb']
 
 ######################################################
 # latex
 ######################################################
 
-  commands[43] = [
+  commands[45] = [
     'sudo',
     'apt-get',
     'install',
+    '--yes',
+    '--force-yes',
     'texlive-full']
     
-  commands[44] = [
+  commands[46] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_UkxPc1JFa0JLdU0',
-    '/home/amir/installed_deb_files/culmus_package.deb']
+    'installed_deb_files/culmus_package.deb']
 
-  commands[45] = [
+  commands[47] = [
     'sudo',
     'dpkg',
     '--install',
-    '/home/amir/installed_deb_files/culmus_package.deb']
+    'installed_deb_files/culmus_package.deb']
 
 
 ######################################################
 # flash
 ######################################################
 
-  commands[46] = [
-    my_change_dir,
+  commands[48] = [
+    cd_into,
     'Downloads']
     
-  commands[47] = [
+  commands[49] = [
     download_file_from_google_drive,
     '0B_AXnUbSJ-r_dHc0NU95SHp3c3c',
     'flash_player.tar.gz']
 
-  commands[48] = [
+  commands[50] = [
     'sudo',
     'tar',
     'xvf',
     'flash_player.tar.gz']
 
-  commands[49] = [
+  commands[51] = [
     'sudo',
     'cp',
     'libflashplayer.so',
     '/usr/lib/mozilla/plugins/']
 
-  commands[50] = [
+  commands[52] = [
     'sudo',
     'cp',
     'usr/bin/flash-player-properties',
     '/usr/lib/mozilla/plugins/']
 
-  commands[51] = [
+  commands[53] = [
     'sudo',
     'rm',
     '-r',
     '*']
 
   run_commands(commands)
-
 
 
 
