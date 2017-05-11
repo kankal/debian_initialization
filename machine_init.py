@@ -226,11 +226,15 @@ if __name__ == '__main__':
   commands[27] = [
     'apt-get',
     'install',
+    '--yes',
+    '--force-yes',      
     'cmake']
 
   commands[28] = [
     'apt-get',
     'install',
+    '--yes',
+    '--force-yes',      
     'python-dev',
     'python3-dev']
 
