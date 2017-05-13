@@ -28,14 +28,11 @@ def run_commands(commands):
             my_func = commands[number][0]
             my_parameters = commands[number][1:]
             my_func(my_parameters)
-
         else:
-# result = subprocess.run(commands[number]) waiting for python 3.5
-            result = subprocess.call(commands[number])
-
+            result = subprocess.check_call(commands[number])
         print('Completed command number ' + str(number) + '\n')
 
-
+# result = subprocess.run(commands[number]) waiting for python 3.5
 
 
 def cd_into(to_path):
@@ -311,7 +308,6 @@ if __name__ == '__main__':
     'installed_deb_files/v500_third_package.deb']
 
   commands[41] = [
-    'sudo',
     'apt-get',
     'install',
     '--yes',
@@ -319,19 +315,16 @@ if __name__ == '__main__':
     'xstlproc']
 
   commands[42] = [
-    'sudo',
     'dpkg',
     '--install',
     'installed_deb_files/v500_first_package.deb']
 
   commands[43] = [
-    'sudo',
     'dpkg',
     '--install',
     'installed_deb_files/v500_second_package.deb']
 
   commands[44] = [
-    'sudo',
     'dpkg',
     '--install',
     'installed_deb_files/v500_third_package.deb']
@@ -341,7 +334,6 @@ if __name__ == '__main__':
 ######################################################
 
   commands[45] = [
-    'sudo',
     'apt-get',
     'install',
     '--yes',
@@ -354,7 +346,6 @@ if __name__ == '__main__':
     'installed_deb_files/culmus_package.deb']
 
   commands[47] = [
-    'sudo',
     'dpkg',
     '--install',
     'installed_deb_files/culmus_package.deb']
@@ -374,29 +365,139 @@ if __name__ == '__main__':
     'flash_player.tar.gz']
 
   commands[50] = [
-    'sudo',
     'tar',
     'xvf',
     'flash_player.tar.gz']
 
   commands[51] = [
-    'sudo',
     'cp',
     'libflashplayer.so',
     '/usr/lib/mozilla/plugins/']
 
   commands[52] = [
-    'sudo',
     'cp',
     'usr/bin/flash-player-properties',
     '/usr/lib/mozilla/plugins/']
 
   commands[53] = [
-    'sudo',
     'rm',
     '-r',
     '*']
 
+
+######################################################
+# cgdb
+######################################################
+
+  commands[54] = [
+    cd_into,
+    '/usr/local']
+
+  commands[55] = [
+    'git',
+    'clone',
+    'git://github.com/cgdb/cgdb.git']
+
+  commands[56] = [
+    cd_into,
+    'cgdb']
+
+  commands[57] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'automake']
+
+  commands[58] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'libncurses5-dev']
+
+  commands[59] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'flex']
+
+  commands[60] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'bison']
+
+  commands[61] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'texinfo']
+
+  commands[62] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'help2man']
+
+  commands[63] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'libreadline-gplv2-dev']
+
+  commands[64] = [
+    './autogen.sh']
+
+  commands[65] = [
+    './configure',
+    '--prefix=/usr/local']
+
+  commands[66] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'make']
+
+  commands[67] = [
+    'make']
+
+  commands[68] = [
+    'make',
+    'install']
+    
+    
+######################################################
+# vmplayer
+######################################################
+
+  commands[69] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'gcc']
+
+  commands[70] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'linux-headers-amd64']
+
+  commands[71] = [
+    'apt-get',
+    'install',
+    '--yes',
+    '--force-yes',
+    'make']
+    
   run_commands(commands)
 
 
