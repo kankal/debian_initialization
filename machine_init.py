@@ -1,288 +1,93 @@
 #! /usr/bin/python3.4
 
-import subprocess
-
-command = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'python3-pip']
-subprocess.call(command)
-
-
-command = [
-    'pip3',
-    'install',
-    'requests']
-subprocess.call(command)
-
+RED = "\033[1;31m"
+BLUE = "\033[1;34m"
+GREEN = "\033[0;32m"
+RESET = "\033[0;0m"
+REVERSE = "\033[;7m"
 
 import os
-import requests
-from multiprocessing import Process, Queue
-
-def run_commands(commands):
-    for number in sorted(commands.keys()):
-        if number in [11, 19, 21, 24, 30]:
-            my_func = commands[number][0]
-            my_parameters = commands[number][1:]
-            my_func(my_parameters)
-        else:
-            result = subprocess.check_call(commands[number])
-        print('Completed command number ' + str(number) + '\n')
-
-# result = subprocess.run(commands[number]) waiting for python 3.5
-
+import sys
+import subprocess
 
 def cd_into(to_path):
     os.chdir(to_path[0])
 
-def download_file_from_google_drive(args):
-    URL = "https://docs.google.com/uc?export=download"
+def run_commands(command_groups):
+    for group in command_groups:
+        print_message(group[0], BLUE)
+        for command in group[2]:
+            print_message(command[0], BLUE)
+            if type(command[2][0]) is not str:
+                my_func = command[2][0]
+                my_parameters = command[2][1:]
+                my_func(my_parameters)
+            else:
+                result = subprocess.check_call(command[2])
+            print_message(command[1], GREEN)
+        print_message(group[1], GREEN)
 
-    session = requests.Session()
-    response = session.get(URL, params = { 'id' : args[0] }, stream = True)
+# result = subprocess.run(commands[number]) waiting for python 3.5
 
-    token = get_confirm_token(response)
-    if token:
-        params = { 'id' : args[0], 'confirm' : token }
-        response = session.get(URL, params = params, stream = True)
+def print_message(message, color):
+#    sys.stdout.write(color)
+    print(message)
+#    sys.stdout.write(RESET)
     
-    save_response_content(response, args[1])
-
-def get_confirm_token(response):
-    for key, value in response.cookies.items():
-        if key.startswith('download_warning'):
-            return value
-
-    return None
-
-def save_response_content(response, destination):
-    CHUNK_SIZE = 32768
-
-    with open(destination, "wb") as f:
-        for chunk in response.iter_content(CHUNK_SIZE):
-            if chunk: # filter out keep-alive new chunks
-                f.write(chunk)
-
-  
 
 ##########################################################################
 ##########################################################################
 ##########################################################################
 ##########################################################################
 ##########################################################################
-
 
 if __name__ == '__main__':
-  commands = {}
+    groups=[]
 
+groups.append(
+['***\npreparations...\n',
+ 'done preparations.\n***\n',
+ [['creating directory for deb files...', 'done.\n', ['sh','-c','sudo -u amir mkdir /home/amir/installed_deb_files']]]
+])
 
-######################################################
-# preparations
-######################################################
-  commands[0] = [
-    'mkdir',
-    '/home/amir/installed_deb_files']
+groups.append(
+['***\nvim...',
+ 'done vim.\n***\n',
+ [['installing prerequisites...', 'done.\n', ['apt-get','install','--yes','--force-yes','libncurses5-dev','libgnome2-dev','libgnomeui-dev','libgtk2.0-dev','libatk1.0-dev','libbonoboui2-dev','libcairo2-dev','libx11-dev','libxpm-dev','libxt-dev','python3-dev','git']],
+  ['downloading vim...', 'done.\n', ['sh','-c','sudo -u amir git clone https://github.com/vim/vim.git']],
+  ['cd into vim...', 'done.\n', [cd_into,'vim']],
+  ['configuring vim...', 'done.\n', ['sh','-c','sudo -u amir ./configure --with-features=huge --enable-multibyte --enable-python3interp=yes --with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu --enable-gui=gtk2 --enable-cscope --prefix=/usr']],
+  ['making vim...', 'done.\n', ['sh','-c','sudo -u amir make VIMRUNTIMEDIR=/usr/share/vim/vim80']],
+  ['installing vim...', 'done.\n', ['make','install']],
+  ['installing editor alternative link...', 'done.\n', ['update-alternatives','--install','/usr/bin/editor','editor','/usr/bin/vim','1']],
+  ['setting vim as the alternative for editor...', 'done.\n', ['update-alternatives','--set','editor','/usr/bin/vim']]]
+])
 
-
-
-######################################################
-# vim
-######################################################
-
-  # installing prerequisites
-  commands[9] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'libncurses5-dev',
-    'libgnome2-dev',
-    'libgnomeui-dev',
-    'libgtk2.0-dev',
-    'libatk1.0-dev',
-    'libbonoboui2-dev',
-    'libcairo2-dev',
-    'libx11-dev',
-    'libxpm-dev',
-    'libxt-dev',
-    'python3-dev',
-    'git']
-
-  # downloading vim
-  commands[10] = [
-    'git',
-    'clone',
-    'https://github.com/vim/vim.git']
-
-  # cd into vim
-  commands[11] = [
-    cd_into,
-    'vim']
-
-  # configuring vim
-  commands[12] = [
-    './configure',
-    '--with-features=huge',
-    '--enable-multibyte',
-    '--enable-python3interp=yes',
-    '--with-python3-config-dir=/usr/lib/python3.5/config-3.5m-x86_64-linux-gnu',
-    '--enable-gui=gtk2',
-    '--enable-cscope',
-    '--prefix=/usr']
-
-  # making vim
-  commands[13] = [
-    'make',
-    'VIMRUNTIMEDIR=/usr/share/vim/vim80']
-
-  # installing vim
-  commands[14] = [
-    'make',
-    'install']
-
-  # setting vim as default editor
-  commands[15] = [
-    'update-alternatives',
-    '--install',
-    '/usr/bin/editor',
-    'editor',
-    '/usr/bin/vim',
-    '1']
-
-  commands[16] = [
-    'update-alternatives',
-    '--set',
-    'editor',
-    '/usr/bin/vim']
-
-  commands[17] = [
-    'update-alternatives',
-    '--install',
-    '/usr/bin/vi',
-    'editor',
-    '/usr/bin/vim',
-    '1']
-
-  commands[18] = [
-    'update-alternatives',
-    '--set',
-    'vi',
-    '/usr/bin/vim']
-
-######################################################
-# youcompleteme
-######################################################
-
-
-  # cd into home
-  commands[19] = [
-    cd_into,
-    '/home/amir']
-
-  # downloading vundle
-  commands[20] = [
-    'git',
-    'clone',
-    'https://github.com/VundleVim/Vundle.vim.git',
-    '/home/amir/.vim/bundle/Vundle.vim']
-
-  # downloading .vimrc
-  commands[21] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_c3VDVGVoQ0l6cXM',
-    '.vimrc']
-
-  commands[22] = [
-    'vim',
-    '+PluginInstall',
-    '+qall']
-
-  commands[23] = [
-    'mkdir',
-    'ycm_temp']
-
-  commands[24] = [
-    cd_into,
-    'ycm_temp']
-
-  # downloading clang_llvm
-  commands[25] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_Uk5DSWt3SWtxRk0',
-    'clang_llvm.tar.xz']
-
-  commands[26] = [
-    'tar',
-    'jxvf',
-    'clang_llvm.tar.xz']
-
-  commands[27] = [
-    'mv',
-    'clang_llvm',
-    'llvm_root_dir']
-
-  commands[28] = [
-    cd_into,
-    '/home/amir']
-
-  commands[29] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',      
-    'cmake']
-
-  commands[30] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',      
-    'python-dev',
-    'python3-dev']
-
-# creating build directory
-  commands[31] = [
-    'mkdir',
-    'ycm_build']
-
-# cd into build directory
-  commands[32] = [
-    cd_into,
-    'ycm_build']
-
-  commands[33] = [
-    'cmake',
-    '-G',
-    '"Unix Makefiles"',
-    '-DPATH_TO_LLVM_ROOT='+'/home/amir/ycm_temp/llvm_root_dir',
-    '.',
-    '/home/amir/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp']
-
-  commands[34] = [
-    'cmake',
-    '-build',
-    '.',
-    '--target',
-    'ycm_core',
-    '--config',
-    'Release']
-
-  commands[35] = [
-    cd_into,
-    '/home/amir']
-
-  commands[36] = [
-    'rm',
-    '-r',
-    'ycm_build']
-
-  commands[37] = [
-    'rm',
-    '-r',
-    'ycm_temp']
+groups.append(
+['***\nyoucompleteme...\n',
+ 'done youcompleteme.\n***\n',
+ [['cd into home...', 'done.\n', [cd_into,'/home/amir']],
+  ['downloading vundle...', 'done.\n', ['sh','-c','sudo -u amir git clone https://github.com/VundleVim/Vundle.vim.git /home/amir/.vim/bundle/Vundle.vim']],
+  ['downloading .vimrc...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_c3VDVGVoQ0l6cXM .vimrc']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir .vimrc']],
+  ['installing plugins...', 'done.\n', ['sh','-c','sudo -u amir vim +PluginInstall +qall']],
+  ['creating temp directory...', 'done.\n', ['mkdir','ycm_temp']],
+  ['cd into temp directory...', 'done.\n', [cd_into,'ycm_temp']],
+  ['downloading clang_llvm...', 'done.\n', ['sh','-c','../google_drive_file_downloader.py 0B_AXnUbSJ-r_Uk5DSWt3SWtxRk0 clang_llvm.tar.xz']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir clang_llvm.tar.xz']],
+  ['extracting clang_llvm...', 'done.\n', ['tar', 'xvf', 'clang_llvm.tar.xz']],
+  ['renaming to llvm_root_dir...', 'done.\n', ['sh','-c','mv clang+llvm* llvm_root_dir']],
+  ['cd into home...', 'done.\n', [cd_into,'/home/amir']],
+  ['installing cmake...', 'done.\n', ['apt-get','install','--yes','--force-yes','cmake']],
+  ['installing python dev...', 'done.\n', ['apt-get','install','--yes','--force-yes','python-dev','python3-dev']],
+  ['creating build directory...', 'done.\n', ['mkdir','ycm_build']],
+  ['cd into build directory...', 'done.\n', [cd_into,'ycm_build']],
+  ['generating makefiles...', 'done.\n', ['cmake','-G','Unix Makefiles','-DPATH_TO_LLVM_ROOT='+'/home/amir/ycm_temp/llvm_root_dir','.','/home/amir/.vim/bundle/YouCompleteMe/third_party/ycmd/cpp']],
+  ['compiling the libraries...', 'done.\n', ['cmake','--build','.','--target','ycm_core']],
+  ['cd into home...', 'done.\n', [cd_into,'/home/amir']],
+  ['removing build directory...', 'done.\n', ['rm','-r','ycm_build']],
+  ['removing temp directory...', 'done.\n', ['rm','-r','ycm_temp']]]
+])
 
 ######################################################
 # v500
@@ -291,274 +96,69 @@ if __name__ == '__main__':
 # iscan-plugin* - third file
 ######################################################
 
-   
-  commands[38] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_MkhSU1pWZUROYXc',
-    'installed_deb_files/v500_first_package.deb']
+groups.append(
+['***\nv500...\n',
+ 'done v500.\n***\n',
+ [['downloading first package...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_MkhSU1pWZUROYXc installed_deb_files/v500_first_package.deb']],
+  ['downloading second package...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_TWc1Sm1YS1dsVVk installed_deb_files/v500_second_package.deb']],
+  ['downloading third package...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_ZHV6aE1FLUtEUDg installed_deb_files/v500_third_package.deb']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir installed_deb_files/v500_first_package.deb']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir installed_deb_files/v500_second_package.deb']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir installed_deb_files/v500_third_package.deb']],
+  ['installing xstlproc...', 'done.\n', ['apt-get','install','--yes','--force-yes','xsltproc']],
+  ['installing first package...', 'done.\n', ['dpkg','--install','installed_deb_files/v500_first_package.deb']],
+  ['installing second package...', 'done.\n', ['dpkg','--install','installed_deb_files/v500_second_package.deb']],
+  ['installing third package...', 'done.\n', ['dpkg','--install','installed_deb_files/v500_third_package.deb']]]
+])
 
-  commands[39] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_TWc1Sm1YS1dsVVk',
-    'installed_deb_files/v500_second_package.deb']
+groups.append(
+['***\nlatex...\n',
+ 'done latex.\n***\n',
+ [['installing texlive-full...', 'done.\n', ['apt-get','install','--yes','--force-yes','texlive-full']],
+  ['downloading culmus package...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_UkxPc1JFa0JLdU0 installed_deb_files/culmus_package.deb']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir installed_deb_files/culmus_package.deb']],
+  ['installing culmus package...', 'done.\n', ['dpkg','--install','installed_deb_files/culmus_package.deb']]]
+])
 
-  commands[40] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_ZHV6aE1FLUtEUDg',
-    'installed_deb_files/v500_third_package.deb']
+groups.append(
+['***\nflash...\n',
+ 'done flash.\n***\n',
+ [['downloading flash player...', 'done.\n', ['sh','-c','./google_drive_file_downloader.py 0B_AXnUbSJ-r_dHc0NU95SHp3c3c Downloads/flash_player.tar.gz']],
+  ['changing ownership...', 'done.\n', ['sh','-c','chown amir:amir Downloads/flash_player.tar.gz']],
+  ['cd into downloads...', 'done.\n', [cd_into,'/home/amir/Downloads']],
+  ['extracting flash player...', 'done.\n', ['tar','xvf','flash_player.tar.gz']],
+  ['copying flash player .so file into plugins...', 'done.\n', ['cp','libflashplayer.so','/usr/lib/mozilla/plugins/']],
+  ['copying flash player properties into plugins...', 'done.\n', ['cp','usr/bin/flash-player-properties','/usr/lib/mozilla/plugins/']],
+  ['cleaning downloads directory...', 'done.\n', ['sh','-c','rm -r *']]]
+])
 
-  commands[41] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'xstlproc']
+groups.append(
+['***\ncgdb...\n',
+ 'done cgdb.\n***\n',
+ [['cd into /usr/local...', 'done.\n', [cd_into,'/usr/local']],
+  ['downloading cgdb...', 'done.\n', ['git', 'clone', 'git://github.com/cgdb/cgdb.git']],
+  ['cd into cgdb...', 'done.\n', [cd_into,'cgdb']],
+  ['installing automake...', 'done.\n', ['apt-get','install','--yes','--force-yes','automake']],
+  ['installing libncurses5-dev...', 'done.\n', ['apt-get','install','--yes','--force-yes','libncurses5-dev']],
+  ['installing flex...', 'done.\n', ['apt-get','install','--yes','--force-yes','flex']],
+  ['installing bison...', 'done.\n', ['apt-get','install','--yes','--force-yes','bison']],
+  ['installing texinfo...', 'done.\n', ['apt-get','install','--yes','--force-yes','texinfo']],
+  ['installing help2man...', 'done.\n', ['apt-get','install','--yes','--force-yes','help2man']],
+  ['installing libreadline-gplv2-dev...', 'done.\n', ['apt-get','install','--yes','--force-yes','libreadline-gplv2-dev']],
+  ['running autogen...', 'done.\n', ['sh','-c','./autogen.sh']],
+  ['running configure...', 'done.\n', ['sh','-c','./configure --prefix=/usr/local']],
+  ['installing make...', 'done.\n', ['apt-get','install','--yes','--force-yes','make']],
+  ['making...', 'done.\n', ['make']],
+  ['installing cgdb...', 'done.\n', ['make','install']]]
+])
 
-  commands[42] = [
-    'dpkg',
-    '--install',
-    'installed_deb_files/v500_first_package.deb']
-
-  commands[43] = [
-    'dpkg',
-    '--install',
-    'installed_deb_files/v500_second_package.deb']
-
-  commands[44] = [
-    'dpkg',
-    '--install',
-    'installed_deb_files/v500_third_package.deb']
-
-######################################################
-# latex
-######################################################
-
-  commands[45] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'texlive-full']
-    
-  commands[46] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_UkxPc1JFa0JLdU0',
-    'installed_deb_files/culmus_package.deb']
-
-  commands[47] = [
-    'dpkg',
-    '--install',
-    'installed_deb_files/culmus_package.deb']
-
-
-######################################################
-# flash
-######################################################
-
-  commands[48] = [
-    cd_into,
-    'Downloads']
-    
-  commands[49] = [
-    download_file_from_google_drive,
-    '0B_AXnUbSJ-r_dHc0NU95SHp3c3c',
-    'flash_player.tar.gz']
-
-  commands[50] = [
-    'tar',
-    'xvf',
-    'flash_player.tar.gz']
-
-  commands[51] = [
-    'cp',
-    'libflashplayer.so',
-    '/usr/lib/mozilla/plugins/']
-
-  commands[52] = [
-    'cp',
-    'usr/bin/flash-player-properties',
-    '/usr/lib/mozilla/plugins/']
-
-  commands[53] = [
-    'rm',
-    '-r',
-    '*']
+groups.append(
+['***\nvmplayer...\n',
+ 'done vmplayer.\n***\n',
+ [['installing gcc...', 'done.\n', ['apt-get','install','--yes','--force-yes','gcc']],
+  ['installing linux headers...', 'done.\n', ['apt-get','install','--yes','--force-yes','linux-headers-amd64']],
+  ['installing make...', 'done.\n', ['apt-get','install','--yes','--force-yes','make']]]
+])
 
 
-######################################################
-# cgdb
-######################################################
-
-  commands[54] = [
-    cd_into,
-    '/usr/local']
-
-  commands[55] = [
-    'git',
-    'clone',
-    'git://github.com/cgdb/cgdb.git']
-
-  commands[56] = [
-    cd_into,
-    'cgdb']
-
-  commands[57] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'automake']
-
-  commands[58] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'libncurses5-dev']
-
-  commands[59] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'flex']
-
-  commands[60] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'bison']
-
-  commands[61] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'texinfo']
-
-  commands[62] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'help2man']
-
-  commands[63] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'libreadline-gplv2-dev']
-
-  commands[64] = [
-    './autogen.sh']
-
-  commands[65] = [
-    './configure',
-    '--prefix=/usr/local']
-
-  commands[66] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'make']
-
-  commands[67] = [
-    'make']
-
-  commands[68] = [
-    'make',
-    'install']
-    
-    
-######################################################
-# vmplayer
-######################################################
-
-  commands[69] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'gcc']
-
-  commands[70] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'linux-headers-amd64']
-
-  commands[71] = [
-    'apt-get',
-    'install',
-    '--yes',
-    '--force-yes',
-    'make']
-    
-  run_commands(commands)
-
-
-
-
-
-'''
-  # screen is never dimmed
-  commands[1] = [
-    'gsettings',
-    'set',
-    'org.gnome.settings-daemon.plugins.power',
-    'idle-dim',
-    'false']
-  # screen is never being idle
-  commands[2] = [
-    'gsettings',
-    'set',
-    'org.gnome.desktop.session',
-    'idle-delay',
-    '0']
-  # screen is never locked
-  commands[3] = [
-    'gsettings',
-    'set',
-    'org.gnome.desktop.screensaver',
-    'lock-delay',
-    '0']
-  # a new wallpaper
-  commands[4] = [
-    'gsettings',
-    'set',
-    'org.gnome.desktop.background',
-    'picture-uri',
-    'file:///usr/share/backgrounds/DSC3907_by_Todor_Velichkov.jpg']
-  # auto hide launcher
-  commands[5] = [
-    'gsettings',
-    'set',
-    'org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/',
-    'launcher-hide-mode',
-    '1']
-  # resizing launcher icon
-  commands[6] = [
-    'gsettings',
-    'set',
-    'org.compiz.unityshell:/org/compiz/profiles/unity/plugins/unityshell/',
-    'icon-size',
-    '30']
-  # number of horizontal workspaces
-  commands[7] = [
-    'gsettings',
-    'set',
-    'org.compiz.core:/org/compiz/profiles/unity/plugins/core/',
-    'hsize',
-    '2']
-  # number of vertical workspaces
-  commands[8] = [
-    'gsettings',
-    'set',
-    'org.compiz.core:/org/compiz/profiles/unity/plugins/core/',
-    'vsize',
-    '2']
-'''
+run_commands(groups)
