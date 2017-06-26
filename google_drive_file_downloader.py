@@ -1,12 +1,12 @@
-#! /usr/bin/python3.4
+#! /usr/bin/python3.5
 
 import subprocess
 
 command = ['apt-get','install','--yes','--force-yes','python3-pip']
-subprocess.call(command)
+subprocess.run(command)
 
 command = ['pip3','install','requests']
-subprocess.call(command)
+subprocess.run(command)
 
 import requests
 import sys
