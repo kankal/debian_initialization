@@ -1,4 +1,4 @@
-#! /usr/bin/python3.4
+#! /usr/bin/python3.5
 
 RED = "\033[1;31m"
 BLUE = "\033[1;34m"
@@ -23,11 +23,9 @@ def run_commands(command_groups):
                 my_parameters = command[2][1:]
                 my_func(my_parameters)
             else:
-                result = subprocess.check_call(command[2])
-            print_message(command[1], GREEN)
+                result = subprocess.run(command[2])
+                print_message(command[1], GREEN)
         print_message(group[1], GREEN)
-
-# result = subprocess.run(commands[number]) waiting for python 3.5
 
 def print_message(message, color):
 #    sys.stdout.write(color)
